@@ -1,5 +1,7 @@
 import { Canvas } from '@react-three/fiber';
-import { OrbitControls } from '@react-three/drei';
+import { Center, OrbitControls } from '@react-three/drei';
+import { Suspense } from 'react';
+import DataPoints from './DataPoints';
 
 export default function VisualizationCanvas() {
   return (
@@ -8,10 +10,13 @@ export default function VisualizationCanvas() {
       <ambientLight intensity={0.5} />
       <directionalLight position={[3, 5, 2]} />
       {/*3D Model*/}
-      <mesh>
-        <boxGeometry args={[1, 1, 1]} />
-        <meshStandardMaterial color="orange" />
-      </mesh>
+      <Suspense fallback={null}>
+        {/* Display blanks when data is loaded */}
+        <Center>
+          {/*Center content*/}
+          <DataPoints />
+        </Center>
+      </Suspense>
       {/*Controller*/}
       <OrbitControls />
     </Canvas>

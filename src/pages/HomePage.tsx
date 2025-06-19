@@ -1,11 +1,12 @@
 import VisualizationCanvas from '@/components/VisualizationCanvas';
+import ControlPanel from '@/components/ControlPanel';
 
 export default function HomePage() {
   return (
     <main className="flex h-screen w-screen">
       {/*Left Data Panel*/}
       <div className="w-1/3 bg-slate-100 p-4">
-        <h1 className="text-xl font-bold">Data Panel</h1>
+        <ControlPanel />
       </div>
 
       {/*Right 3D Model*/}
