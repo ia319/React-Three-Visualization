@@ -1,24 +1,26 @@
+// src/components/VisualizationCanvas.tsx
 import { Canvas } from '@react-three/fiber';
-import { Center, OrbitControls } from '@react-three/drei';
-import { Suspense } from 'react';
+import { OrbitControls, Center } from '@react-three/drei';
 import DataPoints from './DataPoints';
 
-export default function VisualizationCanvas() {
+// Define Props
+interface VisualizationCanvasProps {
+  data: any[];
+}
+
+export default function VisualizationCanvas({
+  data,
+}: VisualizationCanvasProps) {
   return (
-    <Canvas>
-      {/*Light*/}
-      <ambientLight intensity={0.5} />
-      <directionalLight position={[3, 5, 2]} />
-      {/*3D Model*/}
-      <Suspense fallback={null}>
-        {/* Display blanks when data is loaded */}
-        <Center>
-          {/*Center content*/}
-          <DataPoints />
-        </Center>
-      </Suspense>
-      {/*Controller*/}
-      <OrbitControls />
+    <Canvas camera={{ position: [0, 0, 10], fov: 25 }}>
+      <color attach="background" args={['#202020']} />
+      <ambientLight intensity={1} />
+      <directionalLight position={[5, 5, 5]} intensity={2.5} />
+      <Center>
+        {/* Pass data prop to DataPoints */}
+        <DataPoints data={data} />
+      </Center>
+      <OrbitControls makeDefault />
     </Canvas>
   );
 }

@@ -1,17 +1,49 @@
-import VisualizationCanvas from '@/components/VisualizationCanvas';
-import ControlPanel from '@/components/ControlPanel';
+import { useState } from 'react';
+import { useQuery } from '@tanstack/react-query';
+import VisualizationCanvas from '../components/VisualizationCanvas';
+import ControlPanel from '../components/ControlPanel';
+import DataTable from '@/components/DataTable';
+// Move data fetching logic here
+const fetchDatasetById = async (datasetId: string | null) => {
+  if (!datasetId) return [];
+  const response = await fetch(
+    `http://localhost:8080/api/datasets/${datasetId}`,
+  );
+  if (!response.ok) {
+    throw new Error('Failed to fetch dataset');
+  }
+  return response.json();
+};
 
 export default function HomePage() {
-  return (
-    <main className="flex h-screen w-screen">
-      {/*Left Data Panel*/}
-      <div className="w-1/3 bg-slate-100 p-4">
-        <ControlPanel />
-      </div>
+  // Manage datasetId at top-level component
+  const [datasetId, setDatasetId] = useState<string | null>(null);
 
-      {/*Right 3D Model*/}
-      <div className="w-2/3 bg-slate-300">
-        <VisualizationCanvas />
+  // useQuery depends on datasetId
+  const { data, isLoading } = useQuery({
+    queryKey: ['dataset', datasetId], // queryKey must include id to refetch when it changes
+    queryFn: () => fetchDatasetById(datasetId),
+    enabled: !!datasetId, // only run query if datasetId exists
+  });
+
+  return (
+    <main className="flex h-screen w-screen bg-slate-100">
+      <div className="w-1/3 max-w-xs border-r border-slate-300">
+        {/* Pass the function to set id to ControlPanel */}
+        <ControlPanel onUploadSuccess={setDatasetId} />
+        <div className="flex-1 overflow-y-auto">
+          {/* Render DataTable, pass data and load status */}
+          <DataTable data={data || []} isLoading={!datasetId || isLoading} />
+        </div>
+      </div>
+      <div className="flex-1 relative">
+        {/* Pass fetched data to 3D canvas */}
+        <VisualizationCanvas data={data || []} />
+        {isLoading && (
+          <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center text-white">
+            Loading Data...
+          </div>
+        )}
       </div>
     </main>
   );
