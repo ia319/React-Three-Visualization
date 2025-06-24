@@ -12,8 +12,7 @@ export default function VisualizationCanvas({
   data,
 }: VisualizationCanvasProps) {
   return (
-    <Canvas camera={{ position: [0, 0, 10], fov: 25 }}>
-      <color attach="background" args={['#202020']} />
+    <Canvas gl={{ alpha: true }} camera={{ position: [0, 0, 10], fov: 25 }}>
       <ambientLight intensity={1} />
       <directionalLight position={[5, 5, 5]} intensity={2.5} />
       <Center>

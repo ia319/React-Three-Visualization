@@ -1,5 +1,5 @@
 import { configureStore } from '@reduxjs/toolkit';
-import visualizationReducer from './visualizationSlice';
+import visualizationReducer from './slices/visualizationSlice';
 
 export const store = configureStore({
   reducer: {

@@ -1,8 +1,8 @@
-import { useMemo, useRef, useEffect } from 'react';
+import { useRef, useEffect } from 'react';
 import * as THREE from 'three';
 import { useSelector, useDispatch } from 'react-redux';
 import { RootState } from '../store/store';
-import { setHoveredIndex } from '../store/visualizationSlice';
+import { setHoveredIndex } from '../store/slices/visualizationSlice';
 
 const tempObject = new THREE.Object3D();
 const tempColor = new THREE.Color();
