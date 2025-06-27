@@ -1,7 +1,7 @@
 // src/components/ControlPanel.tsx
 import { useMutation } from '@tanstack/react-query';
 import { useDispatch, useSelector } from 'react-redux';
-import { RootState } from '../store/store';
+import { StoreState } from '../store/store';
 import { setColor, setScale } from '../store/slices/visualizationSlice';
 
 // Define the upload function
@@ -28,7 +28,7 @@ interface ControlPanelProps {
 export default function ControlPanel({ onUploadSuccess }: ControlPanelProps) {
   const dispatch = useDispatch();
   const { modelColor, modelScale } = useSelector(
-    (state: RootState) => state.visualization,
+    (state: StoreState) => state.visualization,
   );
 
   // Use useMutation

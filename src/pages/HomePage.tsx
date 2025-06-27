@@ -1,8 +1,8 @@
-import { useCallback, useState } from 'react';
+import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import VisualizationCanvas from '../components/VisualizationCanvas';
 import ControlPanel from '../components/ControlPanel';
-import DataChart from '@/components/DataChart';
+import DataChart from '@/components/Chart2D/DataChart';
 // Move data fetching logic here
 const fetchDatasetById = async (datasetId: string | null) => {
   if (!datasetId) return [];
@@ -19,12 +19,6 @@ export default function HomePage() {
   // Manage datasetId at top-level component
   const [datasetId, setDatasetId] = useState<string | null>(null);
 
-  // HoveredIndex
-  const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
-  const handleHover = useCallback((index: number | null) => {
-    setHoveredIndex(index);
-  }, []);
-
   // useQuery depends on datasetId
   const { data, isLoading } = useQuery({
     queryKey: ['dataset', datasetId], // queryKey must include id to refetch when it changes
@@ -39,7 +33,7 @@ export default function HomePage() {
         <ControlPanel onUploadSuccess={setDatasetId} />
         <div className="h-1/3 w-2/3 m-auto mt-[50px]">
           {/*2D chart*/}
-          <DataChart activeIndex={hoveredIndex} onHover={handleHover} />
+          <DataChart />
         </div>
       </div>
       <div className="flex-1 relative h-2/3 my-auto">

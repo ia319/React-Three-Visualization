@@ -8,7 +8,7 @@ export interface VisualizationState {
 
 // Define initial state
 const initialState: VisualizationState = {
-  modelColor: '#ff7f50',
+  modelColor: '#8884d8',
   modelScale: 1.0,
   hoveredIndex: null,
 };

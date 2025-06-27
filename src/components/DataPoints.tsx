@@ -1,19 +1,12 @@
 import { useRef, useEffect } from 'react';
 import * as THREE from 'three';
 import { useSelector, useDispatch } from 'react-redux';
-import { RootState } from '../store/store';
-import { setHoveredIndex } from '../store/slices/visualizationSlice';
+import { RootState } from '@/store/store';
+import { setHoveredIndex } from '@/store/slices/visualizationSlice';
+import type { DataPoint } from './types';
 
 const tempObject = new THREE.Object3D();
 const tempColor = new THREE.Color();
-
-interface DataPoint {
-  x: number;
-  y: number;
-  z: number;
-
-  [key: string]: any;
-}
 
 // Define component Props type
 interface DataPointsProps {

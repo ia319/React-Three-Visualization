@@ -1,7 +1,7 @@
 // src/components/VisualizationCanvas.tsx
 import { Canvas } from '@react-three/fiber';
-import { OrbitControls, Center } from '@react-three/drei';
-import DataPoints from './DataPoints';
+import { OrbitControls } from '@react-three/drei';
+import Chart3D from '@/components/Chart3D/Chart3D';
 
 // Define Props
 interface VisualizationCanvasProps {
@@ -12,14 +12,15 @@ export default function VisualizationCanvas({
   data,
 }: VisualizationCanvasProps) {
   return (
-    <Canvas gl={{ alpha: true }} camera={{ position: [0, 0, 10], fov: 25 }}>
+    <Canvas gl={{ alpha: true }} camera={{ position: [25, 10, 10], fov: 50 }}>
+      // Lighting
       <ambientLight intensity={1} />
-      <directionalLight position={[5, 5, 5]} intensity={2.5} />
-      <Center>
-        {/* Pass data prop to DataPoints */}
-        <DataPoints data={data} />
-      </Center>
-      <OrbitControls makeDefault />
+      <directionalLight position={[-5, 10, -5]} intensity={2} />
+      // Grid
+      <gridHelper args={[30, 30, '#888888', '#cccccc']} position={[0, 0, 0]} />
+      // 3D model
+      <Chart3D />
+      <OrbitControls minPolarAngle={Math.PI / 6} maxPolarAngle={Math.PI / 2} />
     </Canvas>
   );
 }
