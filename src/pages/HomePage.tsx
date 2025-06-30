@@ -2,8 +2,8 @@ import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import VisualizationCanvas from '../components/VisualizationCanvas';
 import ControlPanel from '../components/ControlPanel';
-import DataChart from '@/components/Chart2D/DataChart';
-// Move data fetching logic here
+import Index from '@/components/Chart2D';
+// Get data
 const fetchDatasetById = async (datasetId: string | null) => {
   if (!datasetId) return [];
   const response = await fetch(
@@ -33,7 +33,7 @@ export default function HomePage() {
         <ControlPanel onUploadSuccess={setDatasetId} />
         <div className="h-1/3 w-2/3 m-auto mt-[50px]">
           {/*2D chart*/}
-          <DataChart />
+          <Index data={data || []} />
         </div>
       </div>
       <div className="flex-1 relative h-2/3 my-auto">

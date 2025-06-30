@@ -1,8 +1,8 @@
 // src/components/ControlPanel.tsx
 import { useMutation } from '@tanstack/react-query';
 import { useDispatch, useSelector } from 'react-redux';
-import { StoreState } from '../store/store';
-import { setColor, setScale } from '../store/slices/visualizationSlice';
+import { StoreState } from '@/store/store';
+import { setColor, setScale } from '@/store/slices/visualizationSlice';
 
 // Define the upload function
 const uploadDataset = async (file: File): Promise<{ id: string }> => {
