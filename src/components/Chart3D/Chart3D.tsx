@@ -1,9 +1,11 @@
-import { useMemo } from 'react';
+import { useLayoutEffect, useMemo, useRef } from 'react';
 import { ChartDataPoint } from '@/components/types';
+import * as THREE from 'three';
 import { useDispatch, useSelector } from 'react-redux';
 import type { StoreState } from '@/store/store';
 import { setHoveredIndex } from '@/store/slices/visualizationSlice';
 import FacingText from './FacingText';
+import { ThreeEvent } from '@react-three/fiber';
 
 const data: ChartDataPoint[] = [
   {
@@ -49,7 +51,14 @@ const data: ChartDataPoint[] = [
     amt: 2100,
   },
 ];
+
+// Temporary object used for reuse outside the loop to avoid repeated creation within the loop
+const tempObject = new THREE.Object3D();
+const tempColor = new THREE.Color();
+
 export default function Chart3D() {
+  const instancedMeshRef = useRef<THREE.InstancedMesh>(null!);
+
   const max = useMemo(() => Math.max(...data.map((d) => d.uv)), [data]);
   const dispatch = useDispatch();
   const { modelColor, modelScale, hoveredIndex } = useSelector(
@@ -72,23 +81,74 @@ export default function Chart3D() {
     });
   }, [data]);
 
+  // Use useLayoutEffect to update the properties of each instance
+  useLayoutEffect(() => {
+    if (!instancedMeshRef.current) return;
+
+    data.forEach((item, i) => {
+      const height = (item.uv / max) * 5;
+      const [x, z] = positions[i];
+      const isActive = hoveredIndex === i;
+
+      // Set transformation matrix (position, rotation, scaling)
+      tempObject.position.set(x, height / 2, z);
+      tempObject.scale.set(1, height, 1);
+      tempObject.updateMatrix(); // 计算最终的变换矩阵
+      instancedMeshRef.current.setMatrixAt(i, tempObject.matrix);
+
+      // Set instance color
+      tempColor.set(isActive ? '#FFC658' : modelColor);
+      instancedMeshRef.current.setColorAt(i, tempColor);
+    });
+
+    // Marker transformation matrix (position/scale, etc.) has been updated
+    instancedMeshRef.current.instanceMatrix.needsUpdate = true;
+    if (instancedMeshRef.current.instanceColor) {
+      instancedMeshRef.current.instanceColor.needsUpdate = true;
+    }
+  }, [data, positions, max, hoveredIndex, modelColor]);
+
+  // Interactive processing
+  const handlePointerMove = (e: ThreeEvent<PointerEvent>) => {
+    e.stopPropagation();
+    // e.instanceId is the index of the instance that is hovered over
+    if (e.instanceId !== undefined && hoveredIndex !== e.instanceId) {
+      dispatch(setHoveredIndex(e.instanceId));
+    }
+  };
+
+  const handlePointerOut = () => {
+    dispatch(setHoveredIndex(null));
+  };
+
+  if (!data || data.length === 0) {
+    return null;
+  }
   return (
-    <group>
+    <group scale={[modelScale, modelScale, modelScale]}>
+      {/* InstancedMesh component */}
+      <instancedMesh
+        ref={instancedMeshRef}
+        // The third parameter of args is the geometry, material, and quantity of the instance
+        // Subcomponent fills the first two parameters
+        args={[undefined, undefined, data.length]}
+        onPointerMove={handlePointerMove}
+        onPointerOut={handlePointerOut}
+      >
+        {/* All instances share geometry and materials */}
+        <boxGeometry args={[1, 1, 1]} />
+        <meshStandardMaterial />
+      </instancedMesh>
+
+      {/* Text information component */}
       {data.map((item, index) => {
         const height = (item.uv / max) * 5;
         const [x, z] = positions[index];
         const isActive = hoveredIndex === index;
         const color = isActive ? '#FFC658' : modelColor;
+
         return (
-          <group key={item.name} scale={[modelScale, modelScale, modelScale]}>
-            <mesh
-              position={[x, height / 2, z]}
-              onPointerOver={() => dispatch(setHoveredIndex(index))}
-              onPointerOut={() => dispatch(setHoveredIndex(null))}
-            >
-              <boxGeometry args={[1, height, 1]} />
-              <meshStandardMaterial color={color} />
-            </mesh>
+          <group key={item.name}>
             <FacingText
               position={[x, 0, z]}
               fontSize={0.7}
